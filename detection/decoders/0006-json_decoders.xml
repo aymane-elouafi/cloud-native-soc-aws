@@ -1,0 +1,60 @@
+<!--
+- JSON Decoders
+- Copyright (C) 2015, Wazuh Inc.
+- April 21, 2017.
+-
+- This program is a free software; you can redistribute it
+- and/or modify it under the terms of the GNU General Public
+- License (version 2) as published by the FSF - Free Software
+- Foundation.
+-->
+
+<decoder name="json-msgraph">
+  <prematch>"integration":"ms-graph"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <json_null_field>discard</json_null_field>
+</decoder>
+
+<decoder name="modsecurity_decoder">
+  <prematch type="pcre2">^\{"transaction":</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <use_own_name>true</use_own_name>
+</decoder>
+
+<decoder name="aws_cloudtrail_json">
+  <prematch type="pcre2">^\{"integration"\s*:\s*"aws"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <use_own_name>true</use_own_name>
+</decoder>
+
+<decoder name="finance_portal">
+  <prematch type="pcre2">^\{"integration"\s*:\s*"finance_portal"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <use_own_name>true</use_own_name>
+</decoder>
+
+<decoder name="docker_listener_json">
+  <prematch type="pcre2">^\{"integration"\s*:\s*"docker"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <use_own_name>true</use_own_name>
+</decoder>
+
+<decoder name="finance_reporting_json">
+  <prematch type="pcre2">^\{"integration"\s*:\s*"finance_reporting_portal"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <use_own_name>true</use_own_name>
+</decoder>
+
+<decoder name="serverless_report">
+  <prematch>"integration"\s*:\s*"scenario3_serverless"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+  <use_own_name>true</use_own_name>
+</decoder>
+
+
+
+
+<decoder name="json">
+  <prematch>^{\s*"</prematch>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>

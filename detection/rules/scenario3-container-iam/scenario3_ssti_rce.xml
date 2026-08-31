@@ -1,0 +1,55 @@
+<!--
+  Scenario 3 app/WAF layer. Each detection chains off the existing modsec base
+  rule 100020, keyed on the request BODY NOT on the CRS "attack-ssti" tag,
+  because complex container-create payloads (nested {}) don't get that tag.
+-->
+<group name="scenario3,modsecurity,ssti,container_escape,">
+
+  <rule id="100301" level="5">
+    <if_sid>100020</if_sid>
+    <match>attack-ssti</match>
+    <description>SSTI attempt detected by ModSecurity on the web application</description>
+    <mitre><id>T1190</id></mitre>
+    <group>ssti,ssti_observed,web_attack_observed,</group>
+  </rule>
+
+  <rule id="100302" level="10">
+    <if_sid>100020</if_sid>
+    <field name="transaction.request.body" type="pcre2">(?i)(?:child_process|execFileSync|execSync|%2Fnodejs%2Fbin%2Fnode|/nodejs/bin/node)</field>
+    <description>RCE-capable Node.js SSTI payload observed; process execution not yet confirmed</description>
+    <mitre><id>T1190</id><id>T1059.007</id></mitre>
+    <group>rce_payload_observed,</group>
+  </rule>
+
+  <rule id="100303" level="8">
+    <if_sid>100020</if_sid>
+    <field name="transaction.request.body" type="pcre2">(?i)(?:%2E?dockerenv|/\.dockerenv|%2Fproc%2F1%2Fcgroup|/proc/1/cgroup|%2Fproc%2Fself%2Fmountinfo|/proc/self/mountinfo)</field>
+    <description>Container-detection reconnaissance in web payload (/.dockerenv, cgroup, or mountinfo)</description>
+    <mitre><id>T1613</id></mitre>
+    <group>container_recon,web_attack_observed,</group>
+  </rule>
+
+  <rule id="100304" level="10">
+    <if_sid>100020</if_sid>
+    <field name="transaction.request.body" type="pcre2">(?i)(?:docker\.sock|%2Fcontainers%2F(?:create|json)|/containers/(?:create|json)|%2Fimages%2Fcreate|/images/create)</field>
+    <description>Docker socket or Docker API indicators observed in web payload; Docker action not yet confirmed</description>
+    <mitre><id>T1610</id></mitre>
+    <group>docker_api_payload_observed,</group>
+  </rule>
+  <rule id="100305" level="13">
+    <if_sid>100020</if_sid>
+    <field name="transaction.request.body" type="pcre2">(?i)HostConfig.{0,25}Binds</field>
+    <description>CRITICAL: web payload attempts to create a container with a host bind mount (container escape)</description>
+    <mitre><id>T1610</id><id>T1611</id></mitre>
+    <group>container_escape_attempt,host_mount,soar_candidate,</group>
+  </rule>
+
+  <rule id="100306" level="13">
+    <if_sid>100020</if_sid>
+    <field name="transaction.request.body" type="pcre2">(?i)NetworkMode.{0,12}host</field>
+    <description>CRITICAL: web payload attempts to create a host-network container (metadata/credential vector)</description>
+    <mitre><id>T1610</id><id>T1611</id><id>T1552.005</id></mitre>
+    <group>container_escape_attempt,host_network,soar_candidate,</group>
+  </rule>
+
+</group>

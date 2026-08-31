@@ -1,0 +1,136 @@
+<!--
+  Generic detection of AWS temporary assumed-role credentials being used to
+  discover or access resources. Not tied to any particular tool/user-agent
+  severity is graded by the specific action taken, not by which client made
+  the call, since user-agent is trivially spoofable.
+
+  Validate with wazuh-logtest before deploying.
+-->
+<group name="cloud,cloudtrail,assumed_role,">
+
+  <rule id="110800" level="0">
+    <field name="aws.source" type="pcre2">^cloudtrail$</field>
+    <description>AWS CloudTrail event received</description>
+    <group>cloudtrail,amazon,</group>
+  </rule>
+
+  <rule id="110801" level="0">
+    <if_sid>110800</if_sid>
+    <field name="aws.userIdentity.type" type="pcre2">^AssumedRole$</field>
+    <description>AWS API call made using temporary assumed-role credentials</description>
+    <group>assumed_role_use,</group>
+  </rule>
+
+  <rule id="110802" level="3">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventName">^GetCallerIdentity$</field>
+    <description>Assumed-role session verified its own AWS identity</description>
+    <group>identity_check,</group>
+  </rule>
+
+  <rule id="110803" level="5">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^s3\.amazonaws\.com$</field>
+    <field name="aws.eventName">^ListBuckets$</field>
+    <description>Assumed-role session enumerated S3 buckets</description>
+    <mitre><id>T1526</id></mitre>
+    <group>s3_discovery,cloud_discovery,</group>
+  </rule>
+
+  <rule id="110804" level="6">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^s3\.amazonaws\.com$</field>
+    <field name="aws.eventName" type="pcre2">^(?:ListBucket|ListObjects|ListObjectsV2)$</field>
+    <description>Assumed-role session enumerated objects in an S3 bucket</description>
+    <mitre><id>T1526</id></mitre>
+    <group>s3_discovery,cloud_discovery,</group>
+  </rule>
+
+  <rule id="110805" level="10">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^s3\.amazonaws\.com$</field>
+    <field name="aws.eventName">^GetObject$</field>
+    <description>HIGH: Assumed-role session retrieved an S3 object</description>
+    <mitre><id>T1530</id></mitre>
+    <group>s3_data_access,soar_candidate,</group>
+  </rule>
+
+  <rule id="110806" level="5">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^iam\.amazonaws\.com$</field>
+    <field name="aws.eventName" type="pcre2">^(?:ListUsers|ListRoles|ListPolicies|ListAttachedRolePolicies|GetPolicy|GetPolicyVersion|ListPolicyVersions)$</field>
+    <description>Assumed-role session enumerated IAM principals or policies</description>
+    <mitre><id>T1087.004</id></mitre>
+    <group>iam_discovery,cloud_discovery,</group>
+  </rule>
+  
+  <rule id="110820" level="0">
+    <if_sid>110806</if_sid>
+    <field name="aws.userIdentity.arn" type="pcre2">(?i)(?:aws-service-role|AWSServiceRole|AWSReservedSSO|resource-explorer)</field>
+    <description>IAM read-enumeration by an AWS service-linked/SSO role (benign automation) -- suppressed</description>
+    <group>cloudtrail,noise_suppression,</group>
+  </rule>
+  
+
+  <rule id="110807" level="10">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^iam\.amazonaws\.com$</field>
+    <field name="aws.eventName">^CreatePolicyVersion$</field>
+    <description>HIGH: IAM policy version created using assumed-role credentials</description>
+    <mitre><id>T1098</id></mitre>
+    <group>iam_privilege_escalation,soar_candidate,</group>
+  </rule>
+
+  <rule id="110808" level="14">
+    <if_sid>110807</if_sid>
+    <field name="aws.requestParameters.setAsDefault" type="pcre2">^[Tt]rue$</field>
+    <description>CRITICAL: New IAM policy version was set as default -- privilege escalation</description>
+    <mitre><id>T1098</id></mitre>
+    <group>iam_privilege_escalation,soar_candidate,</group>
+  </rule>
+
+  <rule id="110809" level="14">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^iam\.amazonaws\.com$</field>
+    <field name="aws.eventName">^SetDefaultPolicyVersion$</field>
+    <description>CRITICAL: IAM policy default version changed using assumed-role credentials</description>
+    <mitre><id>T1098</id></mitre>
+    <group>iam_privilege_escalation,soar_candidate,</group>
+  </rule>
+
+  <rule id="110810" level="5">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^ec2\.amazonaws\.com$</field>
+    <field name="aws.eventName">^DescribeInstances$</field>
+    <description>Assumed-role session enumerated EC2 instances</description>
+    <mitre><id>T1526</id></mitre>
+    <group>ec2_discovery,lateral_movement_preparation,</group>
+  </rule>
+
+  <rule id="110811" level="5">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^ssm\.amazonaws\.com$</field>
+    <field name="aws.eventName">^DescribeInstanceInformation$</field>
+    <description>Assumed-role session enumerated SSM-managed instances</description>
+    <mitre><id>T1526</id></mitre>
+    <group>ssm_discovery,lateral_movement_preparation,</group>
+  </rule>
+
+  <rule id="110812" level="10">
+    <if_sid>110801</if_sid>
+    <field name="aws.eventSource">^ssm\.amazonaws\.com$</field>
+    <field name="aws.eventName">^StartSession$</field>
+    <description>HIGH: Systems Manager session started using assumed-role credentials</description>
+    <mitre><id>T1021</id></mitre>
+    <group>ssm_session,lateral_movement,soar_candidate,</group>
+  </rule>
+
+  <rule id="110813" level="14">
+    <if_sid>110812</if_sid>
+    <field name="aws.requestParameters.documentName" type="pcre2">^AWS-StartPortForwardingSession(?:ToRemoteHost)?$</field>
+    <description>CRITICAL: Systems Manager port-forwarding session started using assumed-role credentials</description>
+    <mitre><id>T1021</id></mitre>
+    <group>ssm_port_forwarding,lateral_movement,internal_service_access,soar_candidate,</group>
+  </rule>
+
+</group>

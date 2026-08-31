@@ -1,0 +1,158 @@
+<!--
+  Scenario 4 - Serverless Identity Pivot / Confused Deputy - APPLICATION LAYER.
+
+  Finalised against the REAL Lambda source (auditworker_lambda_function.py and
+  reportapi_lambda_function.py). Both functions emit one JSON object per log
+  line via print(json.dumps(...)), always tagged "integration":
+  "scenario3_serverless", with a "component" of "report_api" or "audit_worker".
+
+  Why this layer matters: CloudTrail (scenario4_confused_deputy.xml) sees the
+  privileged downstream (AssumeRole + GetSecretValue) but NOT who asked or what
+  scope. These application logs are the only place the confused deputy itself is
+  visible. Best signal, straight from ReportApi:
+
+      component=report_api  AND  requested_scope=audit
+      AND  actor_is_audit_user=false      ==  a NON-audit user asked for audit
+
+  Real log lines observed:
+    report_api  : {"integration":"scenario3_serverless","component":"report_api",
+                   "event_type":"report_scope_requested","job_id":"...",
+                   "actor_sub":"...","actor_username":"...","actor_groups":[],
+                   "actor_is_audit_user":false,"requested_scope":"audit",
+                   "target_department":"general","source_ip":"..."}
+    audit_worker: {"integration":"scenario3_serverless","component":"audit_worker",
+                   "event_type":"restricted_report_job_completed","job_id":"...",
+                   "actor_sub":"...","requested_scope":"audit","record_count":3}
+
+  ============================ PREREQUISITE ============================
+  CloudWatch Logs ingestion for the two Lambda log groups. Add an
+  aws-cloudwatchlogs wodle to ossec.conf (angle brackets shown as [ ] to keep
+  this inside one XML comment; use real ones):
+
+      [wodle name="aws-cloudwatchlogs"]
+        [bucket type="cloudwatchlogs"]
+          [aws_log_group]/aws/lambda/ReportApi[/aws_log_group]
+          [regions]eu-north-1[/regions]
+          [aws_profile]default[/aws_profile]
+          [only_logs_after]2026-JUL-14[/only_logs_after]
+        [/bucket]
+        [bucket type="cloudwatchlogs"]
+          [aws_log_group]/aws/lambda/AuditWorker[/aws_log_group]
+          [regions]eu-north-1[/regions]
+          [aws_profile]default[/aws_profile]
+          [only_logs_after]2026-JUL-14[/only_logs_after]
+        [/bucket]
+      [/wodle]
+
+  NOTE: the aws-cloudwatchlogs module may WRAP each raw log line inside an outer
+  JSON envelope (integration=aws, the real line under aws.message / full_log).
+  If, after the first ingest, these rules do not fire, grab ONE raw line from
+  /var/ossec/logs/archives/archives.json for a ReportApi event and send it; the
+  decoder offset / field prefixes will be adjusted then. The decoder below
+  assumes the worker's JSON arrives at top level (unwrapped).
+
+  ====================================================================
+  STEP 1 - DECODER: paste INSIDE
+  /var/ossec/etc/decoders/0006-json_decoders.xml (standalone files are ignored;
+  that is the JSON-decoder gotcha), then restart the manager. Angle brackets
+  shown as [ ]; use real ones when you paste:
+
+      [decoder name="serverless_report"]
+        [prematch]"integration"\s*:\s*"scenario3_serverless"[/prematch]
+        [plugin_decoder]JSON_Decoder[/plugin_decoder]
+        [use_own_name]true[/use_own_name]
+      [/decoder]
+
+  ====================================================================
+  STEP 2 - RULES (this file).  Rule id block: 110840-110849.
+  ====================================================================
+-->
+
+<group name="scenario4,aws,lambda,confused_deputy,serverless,application,">
+
+  <!-- Base: any serverless report-pipeline telemetry line. -->
+  <rule id="110840" level="0">
+    <decoded_as>serverless_report</decoded_as>
+    <field name="integration">^scenario3_serverless$</field>
+    <description>Serverless report pipeline telemetry event</description>
+    <group>scenario4,aws,lambda,serverless_report,</group>
+  </rule>
+
+  <!-- ReportApi front door: a scope decision was logged (any scope). -->
+  <rule id="110841" level="3">
+    <if_sid>110840</if_sid>
+    <field name="component">^report_api$</field>
+    <field name="event_type">^report_scope_requested$</field>
+    <description>ReportApi: report scope requested ($(requested_scope)) by $(actor_username)</description>
+    <group>scenario4,aws,lambda,report_scope_requested,</group>
+  </rule>
+
+  <!-- ==================================================================== -->
+  <!-- CONFUSED DEPUTY: audit scope requested by a user NOT in AuditTeam.    -->
+  <!-- actor_is_audit_user=false is authoritative (ReportApi computed it     -->
+  <!-- from the Cognito group claim), so no guessing needed.                 -->
+  <!-- ==================================================================== -->
+  <rule id="110842" level="14">
+    <if_sid>110841</if_sid>
+    <field name="requested_scope">^audit$</field>
+    <field name="actor_is_audit_user">^false$</field>
+    <description>CRITICAL: confused deputy - audit-scope report requested by non-audit user $(actor_username) from $(source_ip) (authorization delegated to untrusted client input)</description>
+    <mitre>
+      <id>T1548</id>
+      <id>T1078</id>
+    </mitre>
+    <group>scenario4,aws,lambda,confused_deputy,privilege_escalation,soar_candidate,</group>
+  </rule>
+
+  <!-- Audit scope requested by a genuine AuditTeam member = expected/benign. -->
+  <rule id="110843" level="4">
+    <if_sid>110841</if_sid>
+    <field name="requested_scope">^audit$</field>
+    <field name="actor_is_audit_user">^true$</field>
+    <description>Audit-scope report requested by authorized audit user $(actor_username)</description>
+    <group>scenario4,aws,lambda,audit_scope_authorized,</group>
+  </rule>
+
+  <!-- ==================================================================== -->
+  <!-- AuditWorker backend confirmation: the privileged audit path actually  -->
+  <!-- ran (assumed the role + is about to read the finance DB). This fires  -->
+  <!-- for EVERY audit job regardless of who asked, so it corroborates the   -->
+  <!-- CloudTrail AssumeRole/GetSecretValue (110830/110831).                 -->
+  <!-- ==================================================================== -->
+  <rule id="110844" level="10">
+    <if_sid>110840</if_sid>
+    <field name="component">^audit_worker$</field>
+    <field name="event_type">^restricted_report_job_started$</field>
+    <description>AuditWorker executed the restricted audit path for job $(job_id) (privileged report generation)</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>scenario4,aws,lambda,restricted_job,soar_candidate,</group>
+  </rule>
+
+  <!-- Restricted job completed = finance audit records were read from RDS. -->
+  <rule id="110845" level="12">
+    <if_sid>110840</if_sid>
+    <field name="component">^audit_worker$</field>
+    <field name="event_type">^restricted_report_job_completed$</field>
+    <description>HIGH: AuditWorker returned $(record_count) restricted finance-audit record(s) for job $(job_id)</description>
+    <mitre>
+      <id>T1213</id>
+      <id>T1530</id>
+    </mitre>
+    <group>scenario4,aws,lambda,restricted_data_access,soar_candidate,</group>
+  </rule>
+
+  <!-- Repeated confused-deputy attempts from the same identity = deliberate
+       abuse / probing. Rolls up 110842 by actor_sub. -->
+  <rule id="110846" level="13" frequency="3" timeframe="120">
+    <if_matched_sid>110842</if_matched_sid>
+    <same_field>actor_sub</same_field>
+    <description>Repeated confused-deputy audit requests from the same user (sub $(actor_sub)) - deliberate abuse of the serverless report pipeline</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>scenario4,aws,lambda,confused_deputy,repeated_abuse,soar_candidate,</group>
+  </rule>
+
+</group>

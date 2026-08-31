@@ -1,0 +1,43 @@
+<group name="scenario3,finance_portal,authentication,">
+
+  <rule id="100320" level="0">
+    <decoded_as>finance_portal</decoded_as>
+    <description>Finance Portal event group</description>
+    <group>finance_portal,</group>
+  </rule>
+
+  <rule id="100321" level="5">
+    <if_sid>100320</if_sid>
+    <field name="event_type" type="pcre2">^authentication$</field>
+    <field name="outcome" type="pcre2">^failure$</field>
+    <description>Finance Portal failed login for user $(username) from $(source_ip)</description>
+    <mitre><id>T1110</id></mitre>
+    <group>login_failure,</group>
+  </rule>
+
+  <rule id="100322" level="5">
+    <if_sid>100320</if_sid>
+    <field name="event_type" type="pcre2">^authentication$</field>
+    <field name="outcome" type="pcre2">^success$</field>
+    <description>Finance Portal successful login for user $(username) from $(source_ip)</description>
+    <group>login_success,</group>
+  </rule>
+
+  <rule id="100323" level="12" frequency="5" timeframe="60">
+    <if_matched_sid>100321</if_matched_sid>
+    <same_field>username</same_field>
+    <description>HIGH: Possible brute-force attack against Finance Portal account $(username)</description>
+    <mitre><id>T1110</id></mitre>
+    <group>bruteforce,credential_attack,</group>
+  </rule>
+
+  <rule id="100324" level="14" frequency="5" timeframe="600">
+    <if_sid>100322</if_sid>
+    <if_matched_sid>100321</if_matched_sid>
+    <same_field>username</same_field>
+    <description>CRITICAL: Finance Portal login succeeded after repeated failures for user $(username)</description>
+    <mitre><id>T1110</id><id>T1078</id></mitre>
+    <group>bruteforce_success,valid_account,soar_candidate,</group>
+  </rule>
+
+</group>

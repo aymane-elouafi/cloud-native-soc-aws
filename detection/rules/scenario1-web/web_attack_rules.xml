@@ -1,0 +1,158 @@
+<!--
+  Wazuh local rules for Scenario 1 - Web Attacks against OWASP Juice Shop.
+
+  Deployment target:
+    /var/ossec/etc/rules/local_rules.xml
+
+  Rule design:
+    - The parent rule only groups JSON ModSecurity audit events; it does not alert.
+    - Classifiers rely on either an OWASP CRS attack tag or a narrowly scoped,
+      structured request-field condition where CRS has no NoSQLi tag.
+    - One correlation rule turns repeated or mixed web attacks from one source
+      into a single high-severity incident for SOAR.
+    - No endpoint-only or method-only rules are used, because those create false positives.
+    - Validate every rule on the Wazuh manager with wazuh-logtest before deployment.
+-->
+
+<group name="modsecurity,juice_shop,web_attack,">
+
+  <!-- Parent: identifies a ModSecurity JSON audit event without creating an alert. -->
+  <rule id="100020" level="0">
+    <decoded_as>modsecurity_decoder</decoded_as>
+    <field name="transaction.producer.modsecurity">ModSecurity</field>
+    <description>ModSecurity JSON audit event from Juice Shop target</description>
+    <group>modsecurity,juice_shop,web_attack,</group>
+  </rule>
+
+  <!--
+    Individual SQLi event for the two documented Juice Shop SQLi challenges.
+    The URI condition prevents a generic CRS SQLi tag on another API from
+    misclassifying the NoSQL Manipulation review request as SQL injection.
+  -->
+  <rule id="100021" level="5">
+    <if_sid>100020</if_sid>
+    <match>attack-sqli</match>
+    <field name="transaction.request.uri" type="pcre2">^/rest/(?:user/login|products/search)(?:\?|$)</field>
+    <description>SQL injection attempt detected by ModSecurity on Juice Shop from $(transaction.client_ip)</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_observed,sql_injection,owasp_top10,soar_candidate,</group>
+  </rule>
+
+  <!--
+    NoSQLi / NoSQL Manipulation challenge. The vulnerable API expects a scalar
+    review ID, but an attacker replaces it with an object containing a MongoDB
+    operator, for example {"$ne": 1}. This catches any $-prefixed operator in
+    that field, not only $ne, while normal review updates remain unaffected.
+  -->
+  <rule id="100030" level="5">
+    <if_sid>100020</if_sid>
+    <match>attack-sqli</match>
+    <field name="transaction.request.method">^PATCH$</field>
+    <field name="transaction.request.uri">^/rest/products/reviews$</field>
+    <field name="transaction.request.body" type="pcre2">"id"\s*:\s*\{\s*"\$[A-Za-z][A-Za-z0-9_]*"\s*:</field>
+    <description>NoSQL injection attempt using an operator object in Juice Shop review ID from $(transaction.client_ip)</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_observed,nosql_injection,owasp_top10,soar_candidate,</group>
+  </rule>
+
+  <!-- Individual XSS event: indexed in Wazuh, but not sent to SOAR/GenAI. -->
+  <rule id="100040" level="5">
+    <if_sid>100020</if_sid>
+    <match>attack-xss</match>
+    <description>XSS attempt detected by ModSecurity on Juice Shop from $(transaction.client_ip)</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_observed,xss,owasp_top10,soar_candidate,</group>
+  </rule>
+
+  <!-- Individual SSRF event: indexed in Wazuh, but not sent to SOAR/GenAI. -->
+  <rule id="100060" level="5">
+    <if_sid>100020</if_sid>
+    <match>attack-ssrf</match>
+    <description>SSRF attempt detected by ModSecurity on Juice Shop from $(transaction.client_ip)</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_observed,ssrf,owasp_top10,soar_candidate,</group>
+  </rule>
+  
+    <!-- Local file inclusion/path traversal detected by OWASP CRS. -->
+  <rule id="100080" level="7">
+    <if_sid>100020</if_sid>
+    <match>attack-lfi</match>
+    <description>Local file inclusion or path traversal attempt detected against Juice Shop from $(transaction.client_ip) on $(transaction.request.uri)</description>
+    <mitre>
+      <id>T1190</id>
+      <id>T1083</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_observed,lfi,path_traversal,owasp_top10,soar_candidate,</group>
+  </rule>
+  
+  <!-- Detect external XML entities in HTTP request bodies. -->
+  <rule id="100090" level="8">
+    <if_sid>100020</if_sid>
+    <field name="transaction.request.body" type="pcre2">(?is)DOCTYPE.*ENTITY.*(?:SYSTEM|PUBLIC).*?(?:file:|https?://)</field>
+    <description>XML external entity reference detected in an HTTP request from $(transaction.client_ip) on $(transaction.request.uri)</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_observed,xxe,information_disclosure,owasp_top10,soar_candidate,</group>
+  </rule>
+
+    <!-- Individual failed authentication event. -->
+    <rule id="100091" level="5">
+      <if_sid>100020</if_sid>
+      <field name="transaction.request.method">^POST$</field>
+      <field name="transaction.request.uri" type="pcre2">(?i)/(?:login|signin|authenticate)(?:\?|$)</field>
+      <field name="transaction.response.http_code" type="pcre2">^(?:401|403)$</field>
+      <description>Failed authentication attempt against a web application from $(transaction.client_ip) on $(transaction.request.uri)</description>
+      <mitre>
+        <id>T1078</id>
+      </mitre>
+      <group>authentication,login_failure,credential_attack,</group>
+    </rule>
+    
+    <!-- Repeated failures from one source. -->
+    <rule id="100092" level="10" frequency="5" timeframe="60">
+      <if_matched_sid>100091</if_matched_sid>
+      <same_field>transaction.client_ip</same_field>
+      <description>Potential brute-force authentication activity from $(transaction.client_ip)</description>
+      <mitre>
+        <id>T1110</id>
+      </mitre>
+      <group>authentication,brute_force,credential_attack,soar_candidate,</group>
+    </rule>
+
+  <!--
+    Per-source correlation: 5 SQLi/NoSQLi/XSS/SSRF events from the same client
+    IP in 60 seconds generate a high-severity incident. Downstream deduplication
+    controls SOAR/GenAI fan-out for individual sources.
+  -->
+  <rule id="100070" level="12" frequency="5" timeframe="60">
+    <if_matched_group>web_attack_observed</if_matched_group>
+    <same_field>transaction.client_ip</same_field>
+    <description>CRITICAL: correlated web attack activity against Juice Shop from $(transaction.client_ip)</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>modsecurity,juice_shop,web_attack,web_attack_correlation,soar_candidate,owasp_top10,</group>
+  </rule>
+
+  <!--
+    Global flood correlation: detects a distributed attack/alert storm even when
+    source IPs differ. The 60-second ignore period intentionally emits one
+    summary alert per minute rather than one alert per matching request.
+  -->
+  <rule id="100071" level="14" frequency="100" timeframe="10" ignore="60">
+    <if_matched_group>web_attack_observed</if_matched_group>
+    <global_frequency />
+    <description>CRITICAL: high-rate web attack alert flood against Juice Shop</description>
+    <group>modsecurity,juice_shop,web_attack,web_attack_flood,soar_candidate,owasp_top10,</group>
+  </rule>
+
+</group>

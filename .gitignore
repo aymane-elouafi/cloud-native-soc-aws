@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.pem
+*.key
+.aws/
+*.tar
+*.tar.gz
+.DS_Store

@@ -1,0 +1,108 @@
+<!--
+  Scenario 4 - Serverless Identity Pivot / Confused Deputy - detection rules.
+
+  Telemetry: AWS CloudTrail, ingested by the Wazuh aws-s3 wodle and decoded by
+  the `aws_cloudtrail_json` decoder into flat aws.* fields. These rules chain
+  off the existing CloudTrail base rule 110800
+  (<field name="aws.source">^cloudtrail$</field>).
+
+  What CloudTrail can and cannot see in this serverless flow
+  ========================================================
+  The confused-deputy DECISION (a low-privilege Cognito user sending
+  requested_scope=audit) is only visible in the AuditWorker Lambda application
+  log; see scenario4_lambda_app_rules.xml for that layer.
+
+  What CloudTrail *does* see is the privileged downstream that the flipped field
+  triggers, and that is the strongest infrastructure signal:
+
+    1. AuditWorkerRole  [sts:AssumeRole]  FinanceAuditReadRole      (110830)
+    2. FinanceAuditReadRole  [secretsmanager:GetSecretValue]
+       Scenario3/FinanceAuditRdsReader                             (110831)
+
+  Both are STS/Secrets Manager *management* events (regional, eu-north-1), so
+  they arrive without needing CloudTrail data-event logging. SQS SendMessage and
+  DynamoDB Put/UpdateItem are DATA events and are NOT captured unless data-event
+  logging is enabled on those resources; rules 110835/110836 are provided but
+  will only fire if that logging is turned on.
+
+  Names are matched loosely (substring, case-insensitive) so the rules survive
+  the Scenario3-/no-prefix naming drift documented in the PDF.
+
+  Rule id block: 110830-110839.
+-->
+
+<group name="scenario4,aws,cloudtrail,confused_deputy,serverless,">
+
+  <!-- ================================================================== -->
+  <!-- Identity pivot: the private worker assumes the sensitive audit role -->
+  <!-- ================================================================== -->
+  <rule id="110830" level="10">
+    <if_sid>110800</if_sid>
+    <field name="aws.eventSource">^sts\.amazonaws\.com$</field>
+    <field name="aws.eventName">^AssumeRole$</field>
+    <field name="aws.requestParameters.roleArn" type="pcre2">(?i)FinanceAuditReadRole</field>
+    <description>Serverless identity pivot: a role assumed FinanceAuditReadRole (audit worker escalating to the sensitive finance-audit identity)</description>
+    <mitre>
+      <id>T1548</id>
+      <id>T1550.001</id>
+    </mitre>
+    <group>scenario4,aws,cloudtrail,sts_assumerole,identity_pivot,soar_candidate,</group>
+  </rule>
+
+  <!-- ================================================================== -->
+  <!-- Credential access: the audit role reads the finance DB secret       -->
+  <!-- ================================================================== -->
+  <rule id="110831" level="12">
+    <if_sid>110800</if_sid>
+    <field name="aws.eventSource">^secretsmanager\.amazonaws\.com$</field>
+    <field name="aws.eventName">^GetSecretValue$</field>
+    <field name="aws.requestParameters.secretId" type="pcre2">(?i)FinanceAuditRdsReader</field>
+    <description>Finance-audit DB credentials read from Secrets Manager (GetSecretValue on Scenario3/FinanceAuditRdsReader)</description>
+    <mitre>
+      <id>T1552.005</id>
+      <id>T1555.006</id>
+    </mitre>
+    <group>scenario4,aws,cloudtrail,secrets_manager,credential_access,soar_candidate,</group>
+  </rule>
+
+  <!-- ================================================================== -->
+  <!-- CORRELATION: identity pivot immediately followed by the secret read -->
+  <!-- = the confused-deputy privileged chain executed end to end.         -->
+  <!-- if_matched_sid fires 110832 when a 110831 (GetSecretValue) occurs    -->
+  <!-- within <timeframe> of a 110830 (AssumeRole into the audit role).     -->
+  <!-- ================================================================== -->
+  <rule id="110832" level="14" frequency="2" timeframe="180">
+    <if_matched_sid>110830</if_matched_sid>
+    <field name="aws.eventName">^GetSecretValue$</field>
+    <field name="aws.requestParameters.secretId" type="pcre2">(?i)FinanceAuditRdsReader</field>
+    <description>CRITICAL: confused-deputy chain executed - FinanceAuditReadRole assumed and finance-audit secret read within 3 minutes (serverless privileged report path abused)</description>
+    <mitre>
+      <id>T1548</id>
+      <id>T1552.005</id>
+    </mitre>
+    <group>scenario4,aws,cloudtrail,confused_deputy_chain,credential_access,soar_candidate,</group>
+  </rule>
+
+  <!-- ================================================================== -->
+  <!-- Optional data-plane signals (only fire if CloudTrail data-event      -->
+  <!-- logging is enabled for the queue / table).                          -->
+  <!-- ================================================================== -->
+  <rule id="110835" level="6">
+    <if_sid>110800</if_sid>
+    <field name="aws.eventSource">^sqs\.amazonaws\.com$</field>
+    <field name="aws.eventName">^SendMessage$</field>
+    <field name="aws.requestParameters.queueUrl" type="pcre2">(?i)ReportQueue</field>
+    <description>Report job queued to the serverless worker (SQS SendMessage to Scenario3-ReportQueue)</description>
+    <group>scenario4,aws,cloudtrail,sqs,report_pipeline,</group>
+  </rule>
+
+  <rule id="110836" level="6">
+    <if_sid>110800</if_sid>
+    <field name="aws.eventSource">^dynamodb\.amazonaws\.com$</field>
+    <field name="aws.eventName" type="pcre2">^(?:PutItem|UpdateItem)$</field>
+    <field name="aws.requestParameters.tableName" type="pcre2">(?i)ReportJobs</field>
+    <description>Report job result written to DynamoDB Scenario3-ReportJobs</description>
+    <group>scenario4,aws,cloudtrail,dynamodb,report_pipeline,</group>
+  </rule>
+
+</group>

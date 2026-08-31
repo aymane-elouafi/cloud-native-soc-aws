@@ -1,0 +1,46 @@
+<group name="cloud,ssrf,metadata_service,credential_access,">
+
+  <rule id="110700" level="0">
+    <field name="target_url" type="pcre2">(?i)169\.254\.169\.254|\[?fd00:ec2::254\]?</field>
+    <description>Outbound server-side fetch targeted a cloud instance-metadata service</description>
+    <group>cloud,ssrf,metadata_service,</group>
+  </rule>
+
+  <rule id="110701" level="8">
+    <if_sid>110700</if_sid>
+    <field name="event_type">^remote_document_preview_requested$</field>
+    <field name="target_url" type="pcre2">(?i)/latest/meta-data/(?!iam/security-credentials)</field>
+    <description>Server-side fetch reached the cloud instance-metadata service</description>
+    <mitre><id>T1190</id><id>T1552.005</id></mitre>
+    <group>metadata_access,web_attack_observed,</group>
+  </rule>
+
+  <rule id="110702" level="9">
+    <if_sid>110700</if_sid>
+    <field name="event_type">^remote_document_preview_requested$</field>
+    <field name="target_url" type="pcre2">(?i)security-credentials/?$</field>
+    <description>Server-side fetch enumerated the IAM role attached to a cloud instance</description>
+    <mitre><id>T1526</id></mitre>
+    <group>role_discovery,cloud_discovery,web_attack_observed,</group>
+  </rule>
+
+  <rule id="110703" level="12">
+    <if_sid>110700</if_sid>
+    <field name="event_type">^remote_document_preview_requested$</field>
+    <field name="target_url" type="pcre2">(?i)security-credentials/[^/"?]+</field>
+    <description>HIGH: Server-side fetch requested temporary credentials for a specific IAM role</description>
+    <mitre><id>T1552.005</id></mitre>
+    <group>credential_request,credential_access,</group>
+  </rule>
+
+  <rule id="110704" level="14">
+    <if_sid>110700</if_sid>
+    <field name="event_type">^remote_document_preview_completed$</field>
+    <field name="target_url" type="pcre2">(?i)security-credentials/[^/"?]+</field>
+    <field name="upstream_status" type="pcre2">^2\d\d$</field>
+    <description>CRITICAL: Server-side fetch successfully retrieved temporary cloud credentials</description>
+    <mitre><id>T1552.005</id><id>T1530</id></mitre>
+    <group>credential_theft_confirmed,restricted_data_access,soar_candidate,</group>
+  </rule>
+
+</group>

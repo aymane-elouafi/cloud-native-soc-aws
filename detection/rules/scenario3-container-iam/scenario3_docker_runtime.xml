@@ -1,0 +1,51 @@
+<!--
+  Scenario 3 runtime-confirmation layer (docker-listener, decoder:
+  docker_listener_json). This is the ground truth: a container really got
+  created/started on the host, regardless of whether the WAF caught the
+  payload. 'create' is independently soar_candidate so an escape is detected
+  even if ModSecurity is bypassed.
+-->
+<group name="scenario3,docker,container_runtime,">
+
+  <rule id="100310" level="0">
+    <decoded_as>docker_listener_json</decoded_as>
+    <description>Docker daemon runtime event (docker-listener)</description>
+    <group>docker,docker_event_observed,</group>
+  </rule>
+
+  <rule id="100311" level="7">
+    <if_sid>100310</if_sid>
+    <field name="docker.Type" type="pcre2">^image$</field>
+    <field name="docker.Action" type="pcre2">^(?:pull|create)$</field>
+    <description>Docker image pulled on host: $(docker.Actor.Attributes.name)</description>
+    <mitre><id>T1610</id></mitre>
+    <group>docker_image_pull,</group>
+  </rule>
+
+  <rule id="100312" level="10">
+    <if_sid>100310</if_sid>
+    <field name="docker.Type" type="pcre2">^container$</field>
+    <field name="docker.Action" type="pcre2">^create$</field>
+    <description>CONFIRMED: container created on host via Docker daemon (image $(docker.Actor.Attributes.image), name $(docker.Actor.Attributes.name))</description>
+    <mitre><id>T1610</id><id>T1611</id></mitre>
+    <group>docker_container_create,docker_action_confirmed,soar_candidate,</group>
+  </rule>
+
+  <rule id="100313" level="10">
+    <if_sid>100310</if_sid>
+    <field name="docker.Type" type="pcre2">^container$</field>
+    <field name="docker.Action" type="pcre2">^start$</field>
+    <description>CONFIRMED: container started on host via Docker daemon (name $(docker.Actor.Attributes.name))</description>
+    <mitre><id>T1610</id></mitre>
+    <group>docker_container_start,docker_action_confirmed,</group>
+  </rule>
+
+  <rule id="100314" level="5">
+    <if_sid>100310</if_sid>
+    <field name="docker.Type" type="pcre2">^container$</field>
+    <field name="docker.Action" type="pcre2">^(?:die|kill|stop|destroy)$</field>
+    <description>Container exited, stopped, killed, or removed on host: $(docker.Actor.Attributes.name)</description>
+    <group>docker_container_stop,docker_action_confirmed,</group>
+  </rule>
+
+</group>
