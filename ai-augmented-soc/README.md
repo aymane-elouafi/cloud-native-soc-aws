@@ -28,11 +28,11 @@ Secrets (IRIS API key, etc.) live only in the Shuffle HTTP nodes' Authorization 
 ## Screenshots
 | | |
 |---|---|
-| ![Shuffle workflow](../docs/images/soar-ai/shuffle-workflow.png) | The Shuffle "Wazuh Alert Triage" workflow |
-| ![Cortex jobs](../docs/images/soar-ai/cortex-jobs.png) | Cortex running VirusTotal + AbuseIPDB enrichment |
-| ![Local LLM](../docs/images/soar-ai/lm-studio-local-llm.png) | The local LLM (LM Studio, qwen3-vl-8b) serving triage |
-| ![Attack runner](../docs/images/soar-ai/scenario1-attack-runner.png) | The Scenario 1 attack runner (brute force → SQLi) |
-| ![IRIS timeline & MITRE](../docs/images/soar-ai/iris-timeline-mitre.png) | The case attack timeline + MITRE ATT&CK table |
-| ![Evidence by alert](../docs/images/soar-ai/iris-evidence-by-alert.png) | Per-alert evidence, appended and never overwritten |
-| ![Slack](../docs/images/soar-ai/slack-notification.png) | Slack case notification |
-| ![Email](../docs/images/soar-ai/gmail-notification.png) | Email case notification |
+| ![Shuffle workflow](../docs/images/ai-augmented-soc/shuffle-workflow.png) | The Shuffle "Wazuh Alert Triage" workflow |
+| ![Cortex jobs](../docs/images/ai-augmented-soc/cortex-jobs.png) | Cortex running VirusTotal + AbuseIPDB enrichment |
+| ![Local LLM](../docs/images/ai-augmented-soc/lm-studio-local-llm.png) | The local LLM (LM Studio, qwen3-vl-8b) serving triage |
+| ![Attack runner](../docs/images/ai-augmented-soc/scenario1-attack-runner.png) | The Scenario 1 attack runner (brute force → SQLi) |
+| ![IRIS timeline & MITRE](../docs/images/ai-augmented-soc/iris-timeline-mitre.png) | The case attack timeline + MITRE ATT&CK table |
+| ![Evidence by alert](../docs/images/ai-augmented-soc/iris-evidence-by-alert.png) | Per-alert evidence, appended and never overwritten |
+| ![Slack](../docs/images/ai-augmented-soc/slack-notification.png) | Slack case notification |
+| ![Email](../docs/images/ai-augmented-soc/gmail-notification.png) | Email case notification |

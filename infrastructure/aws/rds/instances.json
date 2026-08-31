@@ -1,0 +1,17 @@
+[
+    {
+        "DBInstanceIdentifier": "finance-db1",
+        "Engine": "mysql",
+        "EngineVersion": "8.4.9",
+        "DBInstanceClass": "db.t4g.micro",
+        "DBName": "finance",
+        "PubliclyAccessible": false,
+        "MultiAZ": false,
+        "StorageEncrypted": true,
+        "VpcId": "vpc-07cc2345b56d676b2",
+        "VpcSecurityGroups": [
+            "sg-0992e646446a11d3b"
+        ],
+        "MasterUsername": "admin"
+    }
+]

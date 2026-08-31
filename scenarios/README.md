@@ -8,7 +8,7 @@ each stage. Runners target the lab hosts over the private overlay; they are for 
 |---|--------|--------------|--------|
 | 1 | `scenario1-web/` | Web attacks on OWASP Juice Shop (brute force, SQLi, NoSQLi, LFI, SSRF, XSS, XXE) | `scenario1_attack_runner.py` |
 | 2 | `scenario2-ssrf-s3/` | SSRF in the **Finance Operations Hub** → IMDSv1 → steal EC2 role → read private S3 | `scenario2_attack_runner.py` (app: `finance_operations_hub.py`) |
-| 3 | `scenario3-container-iam/` | SSTI → RCE → Docker-socket escape → host → IMDS theft → IAM privesc → SSM → finance DB | `scenario3_attack_runner.py` (app: `finance_portal_app.py`; helpers: `ssti_finder.py`, `docker_risk_scan.py`; see `WALKTHROUGH.md`) |
+| 3 | `scenario3-container-iam/` | SSTI → RCE → Docker-socket escape → host → IMDS theft → IAM privesc → SSM → finance DB | `scenario3_attack_runner.py` (app: `finance_portal_app.py`; helpers: `ssti_finder.py`; see `WALKTHROUGH.md`) |
 | 4 | `scenario4-serverless/` | Serverless confused-deputy: low-priv user → API Gateway/Cognito → Lambda deputy reads privileged data | `scenario4_attack_runner.py` (Lambdas: `reportapi_lambda_function.py`, `auditworker_lambda_function.py`) |
 
 **Note:** the finance apps ship with intentionally weak defaults (e.g. `finance_admin` / `finance2026`)

@@ -22,22 +22,11 @@ CloudTrail/CloudWatch telemetry and mapping each rule to **MITRE ATT&CK**.
 
 ## Architecture
 
-```
-                    Attacker (Kali)                          SOC analyst
-                          │                                      │  (VPN / Tailscale)
-        ┌─────────────────┼──────────── AWS account (one Region) │
-        │  Target subnet 10.0.1.0/24     SOC subnet 10.0.2.0/24   │   Internal subnet 10.0.3.0/24
-        │  ┌───────────────────────┐    ┌───────────────────┐    │   ┌────────────────────────┐
-        │  │ EC2: Juice Shop        │    │ SOC EC2:          │    │   │ EC2: internal finance   │
-        │  │ (Docker) + Nginx +     │    │  Wazuh (SIEM)     │    │   │ portal (Flask)          │
-        │  │ ModSecurity WAF        │    │  Shuffle (SOAR)   │    │   │ RDS MySQL, DynamoDB     │
-        │  │ + Finance Ops Hub      │    │  Cortex, DFIR-IRIS│    │   │ Secrets Manager         │
-        │  └───────────────────────┘    │  local LLM (triage)│   │   └────────────────────────┘
-        │        Serverless: API Gateway → Lambda (ReportApi → SQS → AuditWorker), Cognito
-        └────────── CloudTrail + CloudWatch Logs → Wazuh (aws-s3 wodle) ──────────────────────┘
-```
+![Lab architecture](docs/images/architecture/lab-overview.png)
 
-Telemetry flow: **source → Wazuh agent / cloud wodle → decoder → rule → alert → (SOAR pipeline) → DFIR-IRIS → human analyst.**
+*The cloud-native SOC lab: a target subnet (Juice Shop + Nginx/ModSecurity WAF + Finance Ops Hub), a SOC subnet (Wazuh, Shuffle, Cortex, DFIR-IRIS, local LLM), an internal subnet (finance portal, RDS MySQL, DynamoDB, Secrets Manager), and a serverless path (API Gateway → Lambda → SQS → Lambda, Cognito) — all audited by CloudTrail/CloudWatch into Wazuh.*
+
+Telemetry flow: **source → Wazuh agent / cloud wodle → decoder → rule → alert → (AI-augmented triage) → DFIR-IRIS → human analyst.**
 
 ## The four scenarios
 
@@ -72,7 +61,7 @@ and its **Wazuh detection rules** (see below).
 │   ├── scenario2-ssrf-s3/
 │   ├── scenario3-container-iam/
 │   └── scenario4-serverless/
-└── soar-ai/                  ← Exploratory AI-augmented triage pipeline (Shuffle)
+└── ai-augmented-soc/                  ← Exploratory AI-augmented triage pipeline (Shuffle)
     ├── nodes/                20 Shuffle "Execute Python" nodes (00–16)
     └── guides/               Build-from-zero, implementation, and v2-upgrade guides
 ```
@@ -90,10 +79,10 @@ See [`detection/README.md`](detection/README.md).
 
 ## AI-augmented triage (exploratory)
 
-`soar-ai/` contains the Shuffle pipeline: **Wazuh → Shuffle → Cortex enrichment → local LLM → DFIR-IRIS → human**.
+`ai-augmented-soc/` contains the Shuffle pipeline: **Wazuh → Shuffle → Cortex enrichment → local LLM → DFIR-IRIS → human**.
 It correlates a multi-stage campaign into a single *living* IRIS case (entity-based correlation,
 per-alert evidence, deterministic MITRE mapping) with a strict human-in-the-loop design. It is a
-proof of concept — see [`soar-ai/README.md`](soar-ai/README.md) and the limitations noted there.
+proof of concept — see [`ai-augmented-soc/README.md`](ai-augmented-soc/README.md) and the limitations noted there.
 
 ## ⚠️ Disclaimer
 
@@ -111,12 +100,12 @@ Academic supervisor: Prof. Hind Idrissi · Industry supervisor: Mr. Moncef Khafi
 
 **The SOC dashboard and the AI-authored case — from raw alert storm to one explained case:**
 
-![Wazuh Juice Shop dashboard](docs/images/soar-ai/wazuh-juiceshop-dashboard.png)
+![Wazuh Juice Shop dashboard](docs/images/ai-augmented-soc/wazuh-juiceshop-dashboard.png)
 *The Wazuh SOC dashboard for the Juice Shop host — hundreds of alerts, the volume the AI layer absorbs.*
 
-![IRIS living case](docs/images/soar-ai/iris-case-summary.png)
+![IRIS living case](docs/images/ai-augmented-soc/iris-case-summary.png)
 *The AI-authored, colour-coded DFIR-IRIS case: severity/assessment badges, at-a-glance table, MITRE mapping.*
 
 More screenshots (Shuffle workflow, Cortex, the local LLM, the attack runner, per-alert evidence, Slack/email
-notifications) are in [`docs/images/`](docs/images/) and referenced from [`soar-ai/README.md`](soar-ai/README.md).
+notifications) are in [`docs/images/`](docs/images/) and referenced from [`ai-augmented-soc/README.md`](ai-augmented-soc/README.md).
 Attack architecture diagrams are in [`docs/images/architecture/`](docs/images/architecture/).
