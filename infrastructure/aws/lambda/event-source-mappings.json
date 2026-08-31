@@ -1,0 +1,8 @@
+[
+    {
+        "Function": "arn:aws:lambda:eu-north-1:819404925444:function:AuditWorker",
+        "Source": "arn:aws:sqs:eu-north-1:819404925444:Scenario3-ReportQueue",
+        "Batch": 1,
+        "State": "Enabled"
+    }
+]

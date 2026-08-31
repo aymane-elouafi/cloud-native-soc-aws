@@ -1,0 +1,234 @@
+{
+    "Roles": [
+        {
+            "Path": "/",
+            "RoleName": "AuditWorkerRole",
+            "RoleId": "AROA35SCW5ICACJXYV6YQ",
+            "Arn": "arn:aws:iam::819404925444:role/AuditWorkerRole",
+            "CreateDate": "2026-07-29T10:14:21+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Allows Lambda functions to call AWS services on your behalf.",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/aws-service-role/ops.apigateway.amazonaws.com/",
+            "RoleName": "AWSServiceRoleForAPIGateway",
+            "RoleId": "AROA35SCW5ICGRQOXETQO",
+            "Arn": "arn:aws:iam::819404925444:role/aws-service-role/ops.apigateway.amazonaws.com/AWSServiceRoleForAPIGateway",
+            "CreateDate": "2026-07-29T22:01:05+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "ops.apigateway.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "The Service Linked Role is used by Amazon API Gateway.",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/aws-service-role/rds.amazonaws.com/",
+            "RoleName": "AWSServiceRoleForRDS",
+            "RoleId": "AROA35SCW5ICELUXB7JEQ",
+            "Arn": "arn:aws:iam::819404925444:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+            "CreateDate": "2026-07-16T10:00:56+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "rds.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Allows Amazon RDS to manage AWS resources on your behalf",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/aws-service-role/resource-explorer-2.amazonaws.com/",
+            "RoleName": "AWSServiceRoleForResourceExplorer",
+            "RoleId": "AROA35SCW5ICLZGCIXTBG",
+            "Arn": "arn:aws:iam::819404925444:role/aws-service-role/resource-explorer-2.amazonaws.com/AWSServiceRoleForResourceExplorer",
+            "CreateDate": "2026-07-02T11:19:33+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "resource-explorer-2.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/aws-service-role/support.amazonaws.com/",
+            "RoleName": "AWSServiceRoleForSupport",
+            "RoleId": "AROA35SCW5ICIFLSU6NCK",
+            "Arn": "arn:aws:iam::819404925444:role/aws-service-role/support.amazonaws.com/AWSServiceRoleForSupport",
+            "CreateDate": "2026-07-01T19:23:30+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "support.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Enables resource access for AWS to provide billing, administrative and support services",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/aws-service-role/trustedadvisor.amazonaws.com/",
+            "RoleName": "AWSServiceRoleForTrustedAdvisor",
+            "RoleId": "AROA35SCW5ICE6G7NPDCC",
+            "Arn": "arn:aws:iam::819404925444:role/aws-service-role/trustedadvisor.amazonaws.com/AWSServiceRoleForTrustedAdvisor",
+            "CreateDate": "2026-07-01T19:23:30+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "trustedadvisor.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Access for the AWS Trusted Advisor Service to help reduce cost, increase performance, and improve security of your AWS environment.",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/",
+            "RoleName": "FinanceAuditReadRole",
+            "RoleId": "AROA35SCW5ICN2XF3YZNF",
+            "Arn": "arn:aws:iam::819404925444:role/FinanceAuditReadRole",
+            "CreateDate": "2026-07-29T10:23:29+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Sid": "OnlyAuditWorkerMayAssumeThisRole",
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": "arn:aws:iam::819404925444:role/AuditWorkerRole"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/",
+            "RoleName": "ReportApiRole",
+            "RoleId": "AROA35SCW5ICJUE4RKEFJ",
+            "Arn": "arn:aws:iam::819404925444:role/ReportApiRole",
+            "CreateDate": "2026-07-29T10:38:08+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Allows Lambda functions to call AWS services on your behalf.",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/",
+            "RoleName": "ReportingRole",
+            "RoleId": "AROA35SCW5ICAFLA2FV3R",
+            "Arn": "arn:aws:iam::819404925444:role/ReportingRole",
+            "CreateDate": "2026-07-16T09:28:43+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Allows reporting EC2 to be managed by SSM",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/",
+            "RoleName": "Scenario3-Ec2-S3Reader",
+            "RoleId": "AROA35SCW5ICHW4SQ6I3P",
+            "Arn": "arn:aws:iam::819404925444:role/Scenario3-Ec2-S3Reader",
+            "CreateDate": "2026-07-14T15:27:50+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Description": "Allows EC2 instances to call AWS services on your behalf.",
+            "MaxSessionDuration": 3600
+        },
+        {
+            "Path": "/service-role/",
+            "RoleName": "Vulnerable-Invoice-Generator-role-qgv9igyv",
+            "RoleId": "AROA35SCW5ICHPH4L2YEL",
+            "Arn": "arn:aws:iam::819404925444:role/service-role/Vulnerable-Invoice-Generator-role-qgv9igyv",
+            "CreateDate": "2026-07-02T15:32:38+00:00",
+            "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "MaxSessionDuration": 3600
+        }
+    ]
+}

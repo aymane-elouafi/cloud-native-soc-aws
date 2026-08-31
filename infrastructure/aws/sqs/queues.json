@@ -1,0 +1,6 @@
+{
+    "QueueUrls": [
+        "https://sqs.eu-north-1.amazonaws.com/819404925444/Scenario3-ReportQueue",
+        "https://sqs.eu-north-1.amazonaws.com/819404925444/Scenario3-ReportQueue-DLQ"
+    ]
+}

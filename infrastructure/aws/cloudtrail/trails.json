@@ -1,0 +1,9 @@
+[
+    {
+        "Name": "Scenario3-Security-Trail",
+        "Bucket": "aws-cloudtrail-logs-819404925444-7b6d1cf3",
+        "Multi": true,
+        "Global": true,
+        "LogGroup": null
+    }
+]

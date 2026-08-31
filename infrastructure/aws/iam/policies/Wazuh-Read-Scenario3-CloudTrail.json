@@ -1,0 +1,17 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ReadCloudTrailLogsOnly",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::aws-cloudtrail-logs-819404925444-7b6d1cf3",
+                "arn:aws:s3:::aws-cloudtrail-logs-819404925444-7b6d1cf3/AWSLogs/*"
+            ]
+        }
+    ]
+}

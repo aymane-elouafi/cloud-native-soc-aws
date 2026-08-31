@@ -1,0 +1,95 @@
+{
+    "RouteTables": [
+        {
+            "Associations": [
+                {
+                    "Main": true,
+                    "RouteTableAssociationId": "rtbassoc-0259b9c36bf6ae191",
+                    "RouteTableId": "rtb-08c6a970b7468c0a3",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                },
+                {
+                    "Main": false,
+                    "RouteTableAssociationId": "rtbassoc-0770288f687387906",
+                    "RouteTableId": "rtb-08c6a970b7468c0a3",
+                    "SubnetId": "subnet-0fcae84b274213512",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                },
+                {
+                    "Main": false,
+                    "RouteTableAssociationId": "rtbassoc-02878bfefb24323b7",
+                    "RouteTableId": "rtb-08c6a970b7468c0a3",
+                    "SubnetId": "subnet-0c0ffc5c4457b9c34",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "PropagatingVgws": [],
+            "RouteTableId": "rtb-08c6a970b7468c0a3",
+            "Routes": [
+                {
+                    "DestinationCidrBlock": "10.0.0.0/16",
+                    "GatewayId": "local",
+                    "Origin": "CreateRouteTable",
+                    "State": "active"
+                },
+                {
+                    "DestinationCidrBlock": "0.0.0.0/0",
+                    "GatewayId": "igw-0e01e08142c898039",
+                    "Origin": "CreateRoute",
+                    "State": "active"
+                },
+                {
+                    "DestinationPrefixListId": "pl-adae4bc4",
+                    "GatewayId": "vpce-09483ba7ce627f384",
+                    "Origin": "CreateRoute",
+                    "State": "active"
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "cloud-soc-public-rt"
+                }
+            ],
+            "VpcId": "vpc-07cc2345b56d676b2",
+            "OwnerId": "819404925444"
+        },
+        {
+            "Associations": [
+                {
+                    "Main": true,
+                    "RouteTableAssociationId": "rtbassoc-09886160b53942d06",
+                    "RouteTableId": "rtb-0b6d3cd76496736ad",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "PropagatingVgws": [],
+            "RouteTableId": "rtb-0b6d3cd76496736ad",
+            "Routes": [
+                {
+                    "DestinationCidrBlock": "172.31.0.0/16",
+                    "GatewayId": "local",
+                    "Origin": "CreateRouteTable",
+                    "State": "active"
+                },
+                {
+                    "DestinationCidrBlock": "0.0.0.0/0",
+                    "GatewayId": "igw-07f87e805d61db41c",
+                    "Origin": "CreateRoute",
+                    "State": "active"
+                }
+            ],
+            "Tags": [],
+            "VpcId": "vpc-0f85aae507a960b2a",
+            "OwnerId": "819404925444"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+[
+    {
+        "Id": "whc8v11gfa",
+        "Name": "Scenario3-ReportApiGateway",
+        "Proto": "HTTP",
+        "Endpoint": "https://whc8v11gfa.execute-api.eu-north-1.amazonaws.com"
+    }
+]

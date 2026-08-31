@@ -1,0 +1,38 @@
+[
+    {
+        "Id": "i-01e8ec10a4cfc7577",
+        "Type": "t3.micro",
+        "State": "running",
+        "Subnet": "subnet-0c0ffc5c4457b9c34",
+        "PrivIP": "10.0.1.28",
+        "Name": "Target-VM-JuiceShop",
+        "SGs": [
+            "target-sg"
+        ],
+        "Role": "arn:aws:iam::819404925444:instance-profile/Scenario3-Ec2-S3Reader"
+    },
+    {
+        "Id": "i-06d2264262a773d3e",
+        "Type": "t3.micro",
+        "State": "running",
+        "Subnet": "subnet-01abce0c831b0f648",
+        "PrivIP": "10.0.3.54",
+        "Name": "Reporting-EC2",
+        "SGs": [
+            "ReportingSG"
+        ],
+        "Role": "arn:aws:iam::819404925444:instance-profile/ReportingRole"
+    },
+    {
+        "Id": "i-008a02eb91a200d00",
+        "Type": "m7i-flex.large",
+        "State": "running",
+        "Subnet": "subnet-0fcae84b274213512",
+        "PrivIP": "10.0.2.107",
+        "Name": "SOC-VM-Stack",
+        "SGs": [
+            "soc-sg"
+        ],
+        "Role": null
+    }
+]

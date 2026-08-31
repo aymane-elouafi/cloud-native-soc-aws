@@ -1,0 +1,27 @@
+=== ROLE: Vulnerable-Invoice-Generator-role-qgv9igyv ===
+--- trust policy ---
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+--- attached managed policies ---
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AWSLambdaBasicExecutionRole-a4dab3eb-05b4-4f73-87bf-f268f9be1fd0",
+            "PolicyArn": "arn:aws:iam::819404925444:policy/service-role/AWSLambdaBasicExecutionRole-a4dab3eb-05b4-4f73-87bf-f268f9be1fd0"
+        }
+    ]
+}
+--- inline policy names ---
+{
+    "PolicyNames": []
+}

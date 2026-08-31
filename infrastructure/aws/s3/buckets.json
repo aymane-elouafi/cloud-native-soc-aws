@@ -1,0 +1,18 @@
+{
+    "Buckets": [
+        {
+            "Name": "aws-cloudtrail-logs-819404925444-7b6d1cf3",
+            "CreationDate": "2026-07-14T18:06:44+00:00",
+            "BucketArn": "arn:aws:s3:::aws-cloudtrail-logs-819404925444-7b6d1cf3"
+        },
+        {
+            "Name": "company-internal-data-lab",
+            "CreationDate": "2026-07-14T15:08:23+00:00",
+            "BucketArn": "arn:aws:s3:::company-internal-data-lab"
+        }
+    ],
+    "Owner": {
+        "ID": "5aa80df532c3b1578ef36380a6bfeacdbc425bfea2e84e4f29f507307e3647a9"
+    },
+    "Prefix": null
+}

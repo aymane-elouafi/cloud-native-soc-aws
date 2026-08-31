@@ -13,3 +13,5 @@ Live configuration from the lab hosts (secrets redacted).
 The lab: one AWS account, one Region, one VPC (`10.0.0.0/16`) split into three subnets — target
 (`10.0.1.0/24`), SOC (`10.0.2.0/24`), internal (`10.0.3.0/24`). The account has been decommissioned;
 all IDs/credentials shown are lab-only.
+
+- `aws/` — **live AWS configuration** enumerated from the account (IAM users/roles/policies, S3, EC2, Lambda, Cognito, API Gateway, SQS, DynamoDB, Secrets Manager metadata, CloudTrail). See [`aws/README.md`](aws/README.md).

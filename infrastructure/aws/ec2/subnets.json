@@ -1,0 +1,38 @@
+[
+    {
+        "Id": "subnet-027926bd68c54daa9",
+        "Cidr": "172.31.32.0/20",
+        "AZ": "eu-north-1b",
+        "Name": null
+    },
+    {
+        "Id": "subnet-038c15431fabeb3c2",
+        "Cidr": "172.31.16.0/20",
+        "AZ": "eu-north-1a",
+        "Name": null
+    },
+    {
+        "Id": "subnet-0c0ffc5c4457b9c34",
+        "Cidr": "10.0.1.0/24",
+        "AZ": "eu-north-1a",
+        "Name": "target-subnet"
+    },
+    {
+        "Id": "subnet-01abce0c831b0f648",
+        "Cidr": "10.0.3.0/24",
+        "AZ": "eu-north-1a",
+        "Name": "internal-app-subnet"
+    },
+    {
+        "Id": "subnet-0fcae84b274213512",
+        "Cidr": "10.0.2.0/24",
+        "AZ": "eu-north-1b",
+        "Name": "soc-subnet"
+    },
+    {
+        "Id": "subnet-09da616379039c212",
+        "Cidr": "172.31.0.0/20",
+        "AZ": "eu-north-1c",
+        "Name": null
+    }
+]

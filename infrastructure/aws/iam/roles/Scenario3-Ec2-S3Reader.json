@@ -1,0 +1,31 @@
+=== ROLE: Scenario3-Ec2-S3Reader ===
+--- trust policy ---
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+--- attached managed policies ---
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "Priv-EscalationPolicy",
+            "PolicyArn": "arn:aws:iam::819404925444:policy/Priv-EscalationPolicy"
+        },
+        {
+            "PolicyName": "Scenario3-S3ReadOnly",
+            "PolicyArn": "arn:aws:iam::819404925444:policy/Scenario3-S3ReadOnly"
+        }
+    ]
+}
+--- inline policy names ---
+{
+    "PolicyNames": []
+}

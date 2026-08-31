@@ -1,0 +1,16 @@
+{
+    "Name": "Scenario3-ReportJobs",
+    "Keys": [
+        {
+            "AttributeName": "job_id",
+            "KeyType": "HASH"
+        }
+    ],
+    "Attrs": [
+        {
+            "AttributeName": "job_id",
+            "AttributeType": "S"
+        }
+    ],
+    "Items": 20
+}

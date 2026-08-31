@@ -106,3 +106,17 @@ defensive security research and training only.**
 
 **Aymane Elouafi** — Cloud Security Engineering intern, Devoteam CyberTrust (2025/2026).
 Academic supervisor: Prof. Hind Idrissi · Industry supervisor: Mr. Moncef Khafif.
+
+## Screenshots
+
+**The SOC dashboard and the AI-authored case — from raw alert storm to one explained case:**
+
+![Wazuh Juice Shop dashboard](docs/images/soar-ai/wazuh-juiceshop-dashboard.png)
+*The Wazuh SOC dashboard for the Juice Shop host — hundreds of alerts, the volume the AI layer absorbs.*
+
+![IRIS living case](docs/images/soar-ai/iris-case-summary.png)
+*The AI-authored, colour-coded DFIR-IRIS case: severity/assessment badges, at-a-glance table, MITRE mapping.*
+
+More screenshots (Shuffle workflow, Cortex, the local LLM, the attack runner, per-alert evidence, Slack/email
+notifications) are in [`docs/images/`](docs/images/) and referenced from [`soar-ai/README.md`](soar-ai/README.md).
+Attack architecture diagrams are in [`docs/images/architecture/`](docs/images/architecture/).

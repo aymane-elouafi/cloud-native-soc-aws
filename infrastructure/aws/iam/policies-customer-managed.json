@@ -1,0 +1,52 @@
+{
+    "Policies": [
+        {
+            "PolicyName": "AWSLambdaBasicExecutionRole-a4dab3eb-05b4-4f73-87bf-f268f9be1fd0",
+            "PolicyId": "ANPA35SCW5ICAHVZUNEHR",
+            "Arn": "arn:aws:iam::819404925444:policy/service-role/AWSLambdaBasicExecutionRole-a4dab3eb-05b4-4f73-87bf-f268f9be1fd0",
+            "Path": "/service-role/",
+            "DefaultVersionId": "v1",
+            "AttachmentCount": 1,
+            "PermissionsBoundaryUsageCount": 0,
+            "IsAttachable": true,
+            "CreateDate": "2026-07-02T15:32:38+00:00",
+            "UpdateDate": "2026-07-02T15:32:38+00:00"
+        },
+        {
+            "PolicyName": "Wazuh-Read-Scenario3-CloudTrail",
+            "PolicyId": "ANPA35SCW5ICDBQDSJ3K3",
+            "Arn": "arn:aws:iam::819404925444:policy/Wazuh-Read-Scenario3-CloudTrail",
+            "Path": "/",
+            "DefaultVersionId": "v1",
+            "AttachmentCount": 1,
+            "PermissionsBoundaryUsageCount": 0,
+            "IsAttachable": true,
+            "CreateDate": "2026-07-15T08:52:07+00:00",
+            "UpdateDate": "2026-07-15T08:52:07+00:00"
+        },
+        {
+            "PolicyName": "Priv-EscalationPolicy",
+            "PolicyId": "ANPA35SCW5ICIO3W7MIHA",
+            "Arn": "arn:aws:iam::819404925444:policy/Priv-EscalationPolicy",
+            "Path": "/",
+            "DefaultVersionId": "v2",
+            "AttachmentCount": 1,
+            "PermissionsBoundaryUsageCount": 0,
+            "IsAttachable": true,
+            "CreateDate": "2026-07-21T10:00:17+00:00",
+            "UpdateDate": "2026-08-18T09:22:03+00:00"
+        },
+        {
+            "PolicyName": "Scenario3-S3ReadOnly",
+            "PolicyId": "ANPA35SCW5ICNCH3V5WWA",
+            "Arn": "arn:aws:iam::819404925444:policy/Scenario3-S3ReadOnly",
+            "Path": "/",
+            "DefaultVersionId": "v3",
+            "AttachmentCount": 1,
+            "PermissionsBoundaryUsageCount": 0,
+            "IsAttachable": true,
+            "CreateDate": "2026-07-14T15:16:22+00:00",
+            "UpdateDate": "2026-07-14T19:27:39+00:00"
+        }
+    ]
+}

@@ -24,3 +24,15 @@ automated. It is a **proof of concept**: the model is a general-purpose local LL
 for SOC work), FP/TP could be a trained ML classifier, and it reasons only over the single alert — it
 does not query Wazuh for surrounding events or investigate hosts (that would need an agentic system).
 Secrets (IRIS API key, etc.) live only in the Shuffle HTTP nodes' Authorization headers — never in this code.
+
+## Screenshots
+| | |
+|---|---|
+| ![Shuffle workflow](../docs/images/soar-ai/shuffle-workflow.png) | The Shuffle "Wazuh Alert Triage" workflow |
+| ![Cortex jobs](../docs/images/soar-ai/cortex-jobs.png) | Cortex running VirusTotal + AbuseIPDB enrichment |
+| ![Local LLM](../docs/images/soar-ai/lm-studio-local-llm.png) | The local LLM (LM Studio, qwen3-vl-8b) serving triage |
+| ![Attack runner](../docs/images/soar-ai/scenario1-attack-runner.png) | The Scenario 1 attack runner (brute force → SQLi) |
+| ![IRIS timeline & MITRE](../docs/images/soar-ai/iris-timeline-mitre.png) | The case attack timeline + MITRE ATT&CK table |
+| ![Evidence by alert](../docs/images/soar-ai/iris-evidence-by-alert.png) | Per-alert evidence, appended and never overwritten |
+| ![Slack](../docs/images/soar-ai/slack-notification.png) | Slack case notification |
+| ![Email](../docs/images/soar-ai/gmail-notification.png) | Email case notification |

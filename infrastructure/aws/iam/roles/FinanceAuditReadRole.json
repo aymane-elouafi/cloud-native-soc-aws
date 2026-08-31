@@ -1,0 +1,41 @@
+=== ROLE: FinanceAuditReadRole ===
+--- trust policy ---
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "OnlyAuditWorkerMayAssumeThisRole",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::819404925444:role/AuditWorkerRole"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+--- attached managed policies ---
+{
+    "AttachedPolicies": []
+}
+--- inline policy names ---
+{
+    "PolicyNames": [
+        "ReadFinanceAuditSecret"
+    ]
+}
+--- inline policy: ReadFinanceAuditSecret ---
+{
+    "RoleName": "FinanceAuditReadRole",
+    "PolicyName": "ReadFinanceAuditSecret",
+    "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "ReadOnlyFinanceAuditDatabaseSecret",
+                "Effect": "Allow",
+                "Action": "secretsmanager:GetSecretValue",
+                "Resource": "arn:aws:secretsmanager:eu-north-1:819404925444:secret:Scenario3/FinanceAuditRdsReader-p4wXkh"
+            }
+        ]
+    }
+}

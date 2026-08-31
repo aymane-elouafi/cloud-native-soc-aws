@@ -1,0 +1,26 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowRolePolicyEnumeration",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListAttachedRolePolicies"
+            ],
+            "Resource": "arn:aws:iam::819404925444:role/Scenario3-Ec2-S3Reader"
+        },
+        {
+            "Sid": "AllowManagingThisPolicyVersions",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:CreatePolicyVersion",
+                "iam:SetDefaultPolicyVersion",
+                "iam:DeletePolicyVersion"
+            ],
+            "Resource": "arn:aws:iam::819404925444:policy/Priv-EscalationPolicy"
+        }
+    ]
+}

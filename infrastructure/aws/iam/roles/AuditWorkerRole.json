@@ -1,0 +1,65 @@
+=== ROLE: AuditWorkerRole ===
+--- trust policy ---
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+--- attached managed policies ---
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AWSLambdaVPCAccessExecutionRole",
+            "PolicyArn": "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+        },
+        {
+            "PolicyName": "AWSLambdaBasicExecutionRole",
+            "PolicyArn": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        }
+    ]
+}
+--- inline policy names ---
+{
+    "PolicyNames": [
+        "AuditWorkerPermissions"
+    ]
+}
+--- inline policy: AuditWorkerPermissions ---
+{
+    "RoleName": "AuditWorkerRole",
+    "PolicyName": "AuditWorkerPermissions",
+    "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "ConsumeScenario3ReportJobs",
+                "Effect": "Allow",
+                "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                ],
+                "Resource": "arn:aws:sqs:eu-north-1:819404925444:Scenario3-ReportQueue"
+            },
+            {
+                "Sid": "UpdateScenario3JobResults",
+                "Effect": "Allow",
+                "Action": "dynamodb:UpdateItem",
+                "Resource": "arn:aws:dynamodb:eu-north-1:819404925444:table/Scenario3-ReportJobs"
+            },
+            {
+                "Sid": "AssumeFinanceAuditReaderRole",
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",
+                "Resource": "arn:aws:iam::819404925444:role/FinanceAuditReadRole"
+            }
+        ]
+    }
+}

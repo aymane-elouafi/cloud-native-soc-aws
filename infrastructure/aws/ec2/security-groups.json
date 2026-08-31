@@ -1,0 +1,268 @@
+[
+    {
+        "Name": "ReportingSG",
+        "Id": "sg-0a1444359efb3b7d4",
+        "Desc": "Internal reporting EC2 for SSM lateral movement lab",
+        "Ingress": [],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "launch-wizard-1",
+        "Id": "sg-05b08b3a4d2cbfc70",
+        "Desc": "launch-wizard-1 created 2026-08-14T08:49:21.264Z",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 22,
+                "ToPort": 22,
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "Rds-SG",
+        "Id": "sg-0992e646446a11d3b",
+        "Desc": "Private RDS access only from reporting EC2",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 3306,
+                "ToPort": 3306,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "819404925444",
+                        "GroupId": "sg-0a1444359efb3b7d4"
+                    },
+                    {
+                        "UserId": "819404925444",
+                        "GroupId": "sg-02483998f4b187b33"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "PrivateEndpoints-SG",
+        "Id": "sg-0d9a50c3fcc5fccff",
+        "Desc": "Allows Lambda worker to reach private AWS service endpoints",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 443,
+                "ToPort": 443,
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "819404925444",
+                        "GroupId": "sg-02483998f4b187b33"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "LambdaWorker-SG",
+        "Id": "sg-02483998f4b187b33",
+        "Desc": "Private audit worker Lambda access to finance RDS",
+        "Ingress": [],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "soc-sg",
+        "Id": "sg-0ed10777cc4d7ffe4",
+        "Desc": "SOC Security Group",
+        "Ingress": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 1514,
+                "ToPort": 1515,
+                "UserIdGroupPairs": [
+                    {
+                        "Description": "Allows Reporting EC2 to send Wazuh logs to SOC",
+                        "UserId": "819404925444",
+                        "GroupId": "sg-0a1444359efb3b7d4"
+                    }
+                ],
+                "IpRanges": [
+                    {
+                        "Description": "Allows Target to send Wazuh logs to SOC",
+                        "CidrIp": "10.0.1.0/24"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "target-sg",
+        "Id": "sg-0e4d6669431522d06",
+        "Desc": "Target VM security group",
+        "Ingress": [],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "default",
+        "Id": "sg-02534ff0b94bb0b78",
+        "Desc": "default VPC security group",
+        "Ingress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "819404925444",
+                        "GroupId": "sg-02534ff0b94bb0b78"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "default",
+        "Id": "sg-069957f4d2afc7f86",
+        "Desc": "default VPC security group",
+        "Ingress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [
+                    {
+                        "UserId": "819404925444",
+                        "GroupId": "sg-069957f4d2afc7f86"
+                    }
+                ],
+                "IpRanges": [],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ],
+        "Egress": [
+            {
+                "IpProtocol": "-1",
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    }
+]

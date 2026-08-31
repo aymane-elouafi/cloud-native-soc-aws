@@ -1,0 +1,27 @@
+{
+    "Users": [
+        {
+            "Path": "/",
+            "UserName": "crc-builder",
+            "UserId": "AIDA35SCW5ICBW4EWEUHL",
+            "Arn": "arn:aws:iam::819404925444:user/crc-builder",
+            "CreateDate": "2026-07-19T12:55:08+00:00",
+            "PasswordLastUsed": "2026-07-19T12:59:49+00:00"
+        },
+        {
+            "Path": "/",
+            "UserName": "soc-admin",
+            "UserId": "AIDA35SCW5ICEAHTOI7II",
+            "Arn": "arn:aws:iam::819404925444:user/soc-admin",
+            "CreateDate": "2026-07-02T11:45:03+00:00",
+            "PasswordLastUsed": "2026-08-31T14:35:17+00:00"
+        },
+        {
+            "Path": "/",
+            "UserName": "wazuh-cloudtrail-reader",
+            "UserId": "AIDA35SCW5ICLVX6QUQ3I",
+            "Arn": "arn:aws:iam::819404925444:user/wazuh-cloudtrail-reader",
+            "CreateDate": "2026-07-15T08:56:39+00:00"
+        }
+    ]
+}

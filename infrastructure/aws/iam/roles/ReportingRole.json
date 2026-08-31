@@ -1,0 +1,45 @@
+=== ROLE: ReportingRole ===
+--- trust policy ---
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+--- attached managed policies ---
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AmazonSSMManagedInstanceCore",
+            "PolicyArn": "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        }
+    ]
+}
+--- inline policy names ---
+{
+    "PolicyNames": [
+        "ReadFinanceRdsSecret"
+    ]
+}
+--- inline policy: ReadFinanceRdsSecret ---
+{
+    "RoleName": "ReportingRole",
+    "PolicyName": "ReadFinanceRdsSecret",
+    "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "ReadFinanceRdsSecretOnly",
+                "Effect": "Allow",
+                "Action": "secretsmanager:GetSecretValue",
+                "Resource": "arn:aws:secretsmanager:eu-north-1:819404925444:secret:ScenarioChain/FinanceRdsReader*"
+            }
+        ]
+    }
+}

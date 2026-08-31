@@ -1,0 +1,29 @@
+[
+    {
+        "Name": "AuditWorker",
+        "Runtime": "python3.14",
+        "Role": "arn:aws:iam::819404925444:role/AuditWorkerRole",
+        "Handler": "lambda_function.lambda_handler",
+        "VpcConfig": [
+            "subnet-0c0ffc5c4457b9c34",
+            "subnet-01abce0c831b0f648"
+        ],
+        "Env": {
+            "AUDIT_ROLE_ARN": "arn:aws:iam::819404925444:role/FinanceAuditReadRole",
+            "JOB_TABLE": "Scenario3-ReportJobs",
+            "DB_SECRET_ARN": "arn:aws:secretsmanager:eu-north-1:819404925444:secret:Scenario3/FinanceAuditRdsReader-p4wXkh"
+        }
+    },
+    {
+        "Name": "ReportApi",
+        "Runtime": "python3.14",
+        "Role": "arn:aws:iam::819404925444:role/ReportApiRole",
+        "Handler": "lambda_function.lambda_handler",
+        "VpcConfig": null,
+        "Env": {
+            "AUDIT_GROUP": "AuditTeam",
+            "JOB_TABLE": "Scenario3-ReportJobs",
+            "QUEUE_URL": "https://sqs.eu-north-1.amazonaws.com/819404925444/Scenario3-ReportQueue"
+        }
+    }
+]

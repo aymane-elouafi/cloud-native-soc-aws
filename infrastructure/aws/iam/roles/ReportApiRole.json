@@ -1,0 +1,54 @@
+=== ROLE: ReportApiRole ===
+--- trust policy ---
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+--- attached managed policies ---
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AWSLambdaBasicExecutionRole",
+            "PolicyArn": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        }
+    ]
+}
+--- inline policy names ---
+{
+    "PolicyNames": [
+        "ReportApiPermissions"
+    ]
+}
+--- inline policy: ReportApiPermissions ---
+{
+    "RoleName": "ReportApiRole",
+    "PolicyName": "ReportApiPermissions",
+    "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "CreateAndReadReportJobs",
+                "Effect": "Allow",
+                "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem"
+                ],
+                "Resource": "arn:aws:dynamodb:eu-north-1:819404925444:table/Scenario3-ReportJobs"
+            },
+            {
+                "Sid": "SendReportJobsToQueue",
+                "Effect": "Allow",
+                "Action": "sqs:SendMessage",
+                "Resource": "arn:aws:sqs:eu-north-1:819404925444:Scenario3-ReportQueue"
+            }
+        ]
+    }
+}

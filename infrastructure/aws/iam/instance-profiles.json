@@ -1,0 +1,60 @@
+{
+    "InstanceProfiles": [
+        {
+            "Path": "/",
+            "InstanceProfileName": "ReportingRole",
+            "InstanceProfileId": "AIPA35SCW5ICLZIH3TBRQ",
+            "Arn": "arn:aws:iam::819404925444:instance-profile/ReportingRole",
+            "CreateDate": "2026-07-16T09:28:43+00:00",
+            "Roles": [
+                {
+                    "Path": "/",
+                    "RoleName": "ReportingRole",
+                    "RoleId": "AROA35SCW5ICAFLA2FV3R",
+                    "Arn": "arn:aws:iam::819404925444:role/ReportingRole",
+                    "CreateDate": "2026-07-16T09:28:43+00:00",
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": "ec2.amazonaws.com"
+                                },
+                                "Action": "sts:AssumeRole"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Path": "/",
+            "InstanceProfileName": "Scenario3-Ec2-S3Reader",
+            "InstanceProfileId": "AIPA35SCW5ICNJNITTZ6U",
+            "Arn": "arn:aws:iam::819404925444:instance-profile/Scenario3-Ec2-S3Reader",
+            "CreateDate": "2026-07-14T15:27:50+00:00",
+            "Roles": [
+                {
+                    "Path": "/",
+                    "RoleName": "Scenario3-Ec2-S3Reader",
+                    "RoleId": "AROA35SCW5ICHW4SQ6I3P",
+                    "Arn": "arn:aws:iam::819404925444:role/Scenario3-Ec2-S3Reader",
+                    "CreateDate": "2026-07-14T15:27:50+00:00",
+                    "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": "ec2.amazonaws.com"
+                                },
+                                "Action": "sts:AssumeRole"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
