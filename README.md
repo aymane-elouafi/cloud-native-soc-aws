@@ -63,7 +63,7 @@ and its **Wazuh detection rules** (see below).
 │   └── scenario4-serverless/
 └── ai-augmented-soc/                  ← Exploratory AI-augmented triage pipeline (Shuffle)
     ├── nodes/                20 Shuffle "Execute Python" nodes (00–16)
-    └── guides/               Build-from-zero, implementation, and v2-upgrade guides
+    └── guides/               REBUILD_WORKFLOW.md — one guide to rebuild the Shuffle workflow
 ```
 
 ## Detection engineering — the core

@@ -7,11 +7,10 @@ Wazuh (soar_candidate) → Shuffle → Cortex (VirusTotal, AbuseIPDB) → local 
 ```
 
 `nodes/` holds the 20 Shuffle **Execute-Python** nodes (00–16); paste each into the matching node on
-the Shuffle canvas. `guides/` has the full build and upgrade instructions:
-
-- `BUILD_FROM_ZERO_FULL_WORKFLOW.md` — build the workflow from scratch.
-- `IMPLEMENTATION_GUIDE.md` — node-by-node HTTP wiring.
-- `UPGRADE_v2_GUIDE.md` — the v2 upgrade: entity/campaign correlation, living cases, per-alert evidence, deterministic MITRE.
+the Shuffle canvas. [`guides/REBUILD_WORKFLOW.md`](guides/REBUILD_WORKFLOW.md) is the single,
+authoritative guide: it rebuilds the workflow from an empty canvas — the linear chain, the IRIS/Cortex/LLM
+HTTP nodes, the three routing branches, and the living-case features (entity/campaign correlation, living
+summaries, deterministic MITRE, anti-hallucination) — all in one place.
 
 ## What it does
 - **Entity-based correlation** groups a multi-stage campaign into one case (anchor + `ent:*` tokens as IRIS tags).
